@@ -17,11 +17,11 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 if %ERRORLEVEL% NEQ 0 goto :error
 
-REM 4. Установка браузеров Playwright (если не установлен firefox)
 echo [i] Проверяю браузер Playwright...
-python -c "import os; from pathlib import Path; p = Path('playwright-browsers/firefox-1449/firefox/firefox.exe'); exit(0) if p.exists() else exit(1)"
-if %ERRORLEVEL% NEQ 0 (
-    echo [i] Устанавливаю Firefox для Playwright...
+if exist "playwright-browsers\firefox-1449\firefox\firefox.exe" (
+    echo [i] Firefox уже установлен.
+) else (
+    echo [i] Скачиваю Firefox для Playwright...
     python -m playwright install firefox || goto :error
 )
 
