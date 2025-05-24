@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Монитор балансов</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .card {
+      box-shadow: 0 0.5rem 1rem rgba(0,0,0,.1);
+      border-radius: 0.75rem;
+    }
+    .table td, .table th {
+      vertical-align: middle;
+    }
+  </style>
+  <script>
+    // авто-обновление и отображение "n секунд назад"
+    setInterval(() => location.reload(), 60000);
+    function timeago() {
+      document.querySelectorAll('[data-updated]').forEach(el => {
+        const updated = new Date(el.dataset.updated);
+        const now = new Date();
+        const seconds = Math.floor((now - updated) / 1000);
+        let txt = seconds < 60 ? `${seconds} сек назад` :
+                  seconds < 3600 ? `${Math.floor(seconds/60)} мин назад` :
+                  `${Math.floor(seconds/3600)} ч назад`;
+        el.textContent = txt;
+      });
+    }
+    window.onload = timeago;
+  </script>
+</head>
+<body>
+  <div class="container my-4">
+    <h1 class="mb-4 text-center">📊 Монитор балансов</h1>
+    <div class="card p-4">
+      <table class="table table-hover table-bordered align-middle text-center">
+        <thead class="table-light">
+          <tr>
+            <th>Источник</th>
+            <th>Аккаунт</th>
+            <th>Баланс, ₽</th>
+            <th>Обновлено</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+          <tr>
+            <td>{{ r.source }}</td>
+            <td>{{ r.account }}</td>
+            <td><strong>{{ '%.2f'|format(r.value) }}</strong></td>
+            <td data-updated="{{ (r.updated_at + timedelta(hours=3)).isoformat() }}"></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div class="text-end text-muted small">Обновляется каждые 60 сек</div>
+    </div>
+  </div>
+</body>
+</html>

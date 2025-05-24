@@ -1,0 +1,4 @@
+enviroment - venv\Scripts\activate
+
+python: python -m app.scraper.volna
+web: uvicorn app.web.main:app --reload --port 8000
