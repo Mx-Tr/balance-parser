@@ -135,16 +135,16 @@ async def track_account(play, login: str, password: str) -> None:
                     value=balance,
                     updated_at=datetime.utcnow()
                 ))
-            print(f"✓ {datetime.now():%H:%M:%S}  {login}: {balance}")
+            print(f"{datetime.now():%H:%M:%S}  {login}: {balance}")
 
             await context.storage_state(path=str(state_file))
 
         except PWTimeout:
-            print(f"⚠️  {login}: timeout, пробую перелогин …")
+            print(f"{login}: timeout, пробую перелогин …")
             try:
                 await login_flow(page, login, password)
             except Exception as e:
-                print(f"❌  {login}: не вошёл ({e})")
+                print(f"{login}: не вошёл ({e})")
 
         await asyncio.sleep(random.randint(55, 65))
         await page.reload(wait_until="domcontentloaded")
@@ -157,7 +157,11 @@ async def main() -> None:
     async with async_playwright() as p:
         tasks = [asyncio.create_task(track_account(p, login, pwd))
                  for login, pwd in accounts]
-        await asyncio.gather(*tasks)
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        for i, result in enumerate(results):
+          if isinstance(result, Exception):
+            login = accounts[i][0]
+            print(f"Ошибка в аккаунте {login}: {result}")
 
 
 if __name__ == "__main__":
